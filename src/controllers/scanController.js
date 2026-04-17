@@ -56,6 +56,7 @@ async function scanFile(req, res, next) {
     const verdict = mapVerdict(report.stats);
 
     supabase.saveScan({
+      user_id: req.user?.id ?? null,
       target_type: 'file',
       target_name: report.file_name,
       target_hash: report.file_hash,
@@ -111,6 +112,7 @@ async function scanUrl(req, res, next) {
     const verdict = mapVerdict(report.stats);
 
     supabase.saveScan({
+      user_id: req.user?.id ?? null,
       target_type: 'url',
       target_name: url,
       target_hash: urlId,
@@ -142,7 +144,7 @@ async function getAnalysis(req, res, next) {
 async function getReport(req, res, next) {
   try {
     const { id } = req.params;
-    const record = await supabase.getScanById(id);
+    const record = await supabase.getScanById(id, req.user?.id);
 
     if (!record) {
       return res.status(404).json({ error: 'Scan not found' });
@@ -158,7 +160,7 @@ async function getReport(req, res, next) {
 
 async function getHistory(_req, res, next) {
   try {
-    const scans = await supabase.getRecentScans();
+    const scans = await supabase.getRecentScans(20, req.user?.id);
     return res.json(scans);
   } catch (err) {
     next(err);

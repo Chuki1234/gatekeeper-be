@@ -90,4 +90,55 @@ function formatAnalysis(vtData) {
   };
 }
 
-module.exports = { formatFileReport, formatUrlReport, formatAnalysis };
+function formatIntelligenceReport(vtData, context = {}) {
+  const attrs = vtData.data?.attributes ?? {};
+  const stats = normalizeStats(attrs.last_analysis_stats ?? {});
+
+  return {
+    object_id: vtData.data?.id ?? null,
+    object_type: context.objectType ?? vtData.data?.type ?? null,
+    query: context.query ?? null,
+    reputation_score: attrs.reputation ?? 0,
+    total_votes: attrs.total_votes ?? { harmless: 0, malicious: 0 },
+    last_analysis_stats: stats,
+    community_comments: context.communityComments ?? [],
+    last_analysis_date: attrs.last_analysis_date
+      ? new Date(attrs.last_analysis_date * 1000).toISOString()
+      : new Date().toISOString(),
+  };
+}
+
+function normalizeStats(rawStats) {
+  const malicious = rawStats.malicious ?? 0;
+  const suspicious = rawStats.suspicious ?? 0;
+  const harmless = rawStats.harmless ?? 0;
+  const undetected = rawStats.undetected ?? 0;
+
+  return {
+    malicious,
+    suspicious,
+    harmless,
+    undetected,
+    timeout: rawStats.timeout ?? 0,
+    'confirmed-timeout': rawStats['confirmed-timeout'] ?? 0,
+    failure: rawStats.failure ?? 0,
+    'type-unsupported': rawStats['type-unsupported'] ?? 0,
+    total_engines:
+      malicious
+      + suspicious
+      + harmless
+      + undetected
+      + (rawStats.timeout ?? 0)
+      + (rawStats['confirmed-timeout'] ?? 0)
+      + (rawStats.failure ?? 0)
+      + (rawStats['type-unsupported'] ?? 0),
+    positive_hits: malicious + suspicious,
+  };
+}
+
+module.exports = {
+  formatFileReport,
+  formatUrlReport,
+  formatAnalysis,
+  formatIntelligenceReport,
+};

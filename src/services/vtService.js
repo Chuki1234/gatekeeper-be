@@ -73,6 +73,25 @@ async function getUrlReport(urlId) {
   return res.data;
 }
 
+async function getDomainReport(domain) {
+  const res = await axios.get(`${VT_BASE}/domains/${domain}`, { headers: headers() });
+  return res.data;
+}
+
+async function getIpAddressReport(ipAddress) {
+  const res = await axios.get(`${VT_BASE}/ip_addresses/${ipAddress}`, { headers: headers() });
+  return res.data;
+}
+
+async function getObjectComments(objectType, objectId, limit = 5) {
+  const safeObjectType = encodeURIComponent(objectType);
+  const safeObjectId = encodeURIComponent(objectId);
+  const res = await axios.get(`${VT_BASE}/${safeObjectType}/${safeObjectId}/comments?limit=${limit}`, {
+    headers: headers(),
+  });
+  return res.data;
+}
+
 async function submitUrl(url) {
   const res = await axios.post(`${VT_BASE}/urls`, new URLSearchParams({ url }), {
     headers: { ...headers(), 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -88,5 +107,8 @@ module.exports = {
   getAnalysis,
   pollAnalysis,
   getUrlReport,
+  getDomainReport,
+  getIpAddressReport,
+  getObjectComments,
   submitUrl,
 };

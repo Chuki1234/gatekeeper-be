@@ -5,6 +5,7 @@ const cors = require('cors');
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpec = require('./swagger');
 const scanRoutes = require('./routes/scanRoutes');
+const searchRoutes = require('./routes/searchRoutes');
 const errorHandler = require('./middleware/errorHandler');
 const { globalLimiter } = require('./middleware/rateLimiter');
 
@@ -55,6 +56,7 @@ app.get('/api/health', (_req, res) => {
 
 // ─── Routes ───────────────────────────────────────────────
 app.use('/api/scan', scanRoutes);
+app.use('/api/search', searchRoutes);
 
 // ─── Error handler (must be last) ─────────────────────────
 app.use(errorHandler);
