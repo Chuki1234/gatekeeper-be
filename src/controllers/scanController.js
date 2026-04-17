@@ -158,7 +158,7 @@ async function getReport(req, res, next) {
 
 // ─── GET /api/scan/history ────────────────────────────────
 
-async function getHistory(_req, res, next) {
+async function getHistory(req, res, next) {
   try {
     const scans = await supabase.getRecentScans(20, req.user?.id);
     return res.json(scans);
